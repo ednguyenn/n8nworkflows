@@ -1,0 +1,299 @@
+{
+  "name": "Tool: n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "project": {
+          "__rl": true,
+          "value": "2324986945",
+          "mode": "list",
+          "cachedResultName": "In-Room Dining"
+        },
+        "content": "=New In-room dining order for room {{ $json.output.roomNumber }}",
+        "options": {
+          "description": "={{ $json.output.request }}",
+          "dueDateTime": "={{ $json.output.due }}"
+        }
+      },
+      "id": "45503fb0-7507-4ab0-8d6b-889de2572704",
+      "name": "Todoist",
+      "type": "n8n-nodes-base.todoist",
+      "typeVersion": 2.1,
+      "position": [
+        -300,
+        40
+      ],
+      "credentials": {
+        "todoistOAuth2Api": {
+          "id": "BgvQDN8AHoOVKnbr",
+          "name": "Todoist account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "d2fb8dd2-53a6-45a9-a139-9b349a1109a5",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        220
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "rgBvBF7plIG6AHY0",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"request\": {\n      \"type\": \"string\",\n      \"description\": \"Description of the request made by the guest\"\n    },\n    \"roomNumber\": {\n      \"type\": \"string\",\n      \"description\": \"The room number where the request is made\"\n    },\n    \"due\": {\n      \"type\": \"string\",\n      \"description\": \"The due time for the request, in ISO 8601 format\",\n      \"format\": \"date-time\"\n    }\n  }\n}\n"
+      },
+      "id": "37914306-3212-4265-b103-84dc4eee7071",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -560,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9ca0f48e-25f9-4a71-9e5a-be7be8f9b9eb",
+              "name": "response",
+              "value": "=You have created the task successfully\nrequest: {{ $json.content }}\nid: {{ $json.id }}\ndue : {{ $json.due }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a763004a-9b20-4c89-8d7c-b59097fda942",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nrequest = {{ $json.query.orders }}\nroomNumber ={{ $json.query['room number'] }}\ndue ={{ $json.query.requested_time }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=Today’s Date: {{ $now }}\nTimezone: Sydney, Australia\n\nYou are a Todoist expert. Your task is to interpret guest requests and extract the following parameters:\n\n\n\nrequest: a list of orders\n\nroom_number: The room number of the guest\n\ndue: translate it into ISO 8601 date time format\n"
+        }
+      },
+      "id": "dc5279aa-a15a-4b3e-864c-13dce26d4409",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -740,
+        40
+      ]
+    },
+    {
+      "parameters": {
+        "from": "+14346641434",
+        "to": "+61420216545",
+        "message": "=guest in room {{ $json.query['room number'] }} ask a question I dont have an answer for. Can you help ?\n{{ $json.query.question }}",
+        "options": {
+          "statusCallback": ""
+        }
+      },
+      "id": "0248e2eb-2cf6-48cd-8035-4328053f66c9",
+      "name": "Twilio",
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        -180
+      ],
+      "credentials": {
+        "twilioApi": {
+          "id": "F4u5ypS4Pa5jk1JH",
+          "name": "Twilio account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "024cdaaa-3525-4d89-9da1-a1b7cac3275e",
+        "options": {}
+      },
+      "id": "842c03c1-660f-40fd-a6c4-c452130775aa",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1620,
+        60
+      ],
+      "webhookId": "024cdaaa-3525-4d89-9da1-a1b7cac3275e"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.query.question }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "eb479ae0-44ce-46d7-a043-e7619b62c3d9",
+                    "leftValue": "={{ $json.query.question }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notExists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3187709-eb5b-408e-8ea1-9d2eae8edb76",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -1340,
+        60
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Todoist": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Todoist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "50c0abfa-2204-4e44-b372-8202b386d559",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "baa37bfd6cf1f8eb312c3e2e43a6fbac93156eb89eef3a1fc306c8f20ef14852"
+  },
+  "id": "GHgsW2ab3i1ESvQ6",
+  "tags": []
+}

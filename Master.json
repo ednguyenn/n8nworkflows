@@ -1,0 +1,675 @@
+{
+  "name": "Master",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {}
+      },
+      "id": "4a8c27c8-4dff-4290-ab00-5cdde5508a4b",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1240,
+        560
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "rgBvBF7plIG6AHY0",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "a59612ec-af83-4bac-b7db-dac3f4473869",
+      "name": "OpenAI Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -880,
+        740
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "rgBvBF7plIG6AHY0",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.text }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "=file_id",
+                "value": "={{ $('Set File ID').item.json.file_id }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "aa680a25-d584-46e5-a609-e06a9cfc6d83",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        -20,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "6906caa5-0c3f-45b1-b597-7f3dd4da128f",
+      "name": "Embeddings OpenAI1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        1560
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "rgBvBF7plIG6AHY0",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "user_documents",
+        "description": "Contains all the user's documents that you can check for context to answer user questions."
+      },
+      "id": "d617bb36-ea7f-4d53-ba66-58bbc4d85ff7",
+      "name": "Retrieve Documents",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        -1040,
+        580
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Agent Tools for RAG",
+        "height": 528.85546469693,
+        "width": 1040.4864880860637,
+        "color": 4
+      },
+      "id": "5d16ca93-46e6-411f-8737-43c62dc35d69",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1460,
+        680
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Tool to Add a Google Drive File to Vector DB",
+        "height": 660.5457971150909,
+        "width": 2923.1723318915215,
+        "color": 5
+      },
+      "id": "c092b7dc-2749-42cf-b426-ea0571c1654e",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1460,
+        1239.784504646093
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "download",
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Set File ID').item.json.file_id }}",
+          "mode": "id"
+        },
+        "options": {
+          "googleFileConversion": {
+            "conversion": {
+              "docsToFormat": "application/pdf"
+            }
+          }
+        }
+      },
+      "id": "d118069c-292b-4879-a50f-eb1d1ce9798f",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -700,
+        1400
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "z2W1P87d8G7cKpr8",
+          "name": "Google Drive account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "value": "1iMl0urFPXQ5b9evRzSCcIbyRjIUcyXL2",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1iMl0urFPXQ5b9evRzSCcIbyRjIUcyXL2"
+        },
+        "event": "fileCreated",
+        "options": {}
+      },
+      "id": "d60ac9a8-731d-4b51-8be1-c772ee189dcd",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        1320
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "z2W1P87d8G7cKpr8",
+          "name": "Google Drive account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFile",
+        "fileToWatch": {
+          "__rl": true,
+          "value": "1CTvfTlYKVc2wP6dyGqG352RzblTMq2N9MirUCzl3ep4",
+          "mode": "id"
+        }
+      },
+      "id": "c03da3fc-59aa-4ef3-a25b-f45e053fdf30",
+      "name": "File Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        1500
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "z2W1P87d8G7cKpr8",
+          "name": "Google Drive account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "1cc28b03-87cd-42c6-8261-4c5cc651e79d",
+      "name": "Extract Document Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        1400
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "model": "text-embedding-3-small",
+        "options": {}
+      },
+      "id": "0d3f30bb-06e8-41da-ba6b-54c90af2e642",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1,
+      "position": [
+        -1100,
+        980
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "rgBvBF7plIG6AHY0",
+          "name": "OpenAi account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9d362274-e2eb-48a9-a301-bec8664d968b",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -120,
+        1580
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "tableId": "documents",
+        "filterType": "string",
+        "filterString": "=metadata->>file_id=like.*{{ $json.file_id }}*"
+      },
+      "id": "92072ba9-fbd1-4c08-a3f1-91dc8d938603",
+      "name": "Delete Old Doc Rows",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        1400
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "skl19V5xVX7pMADQ",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "10646eae-ae46-4327-a4dc-9987c2d76173",
+              "name": "file_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9273cd5d-5919-4617-90ad-171fc94ae0e6",
+      "name": "Set File ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1140,
+        1400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## RAG AI Agent with Chat Interface",
+        "height": 457.6003284234479,
+        "width": 1034.5331144629754
+      },
+      "id": "a6310b79-c83b-427b-ada5-9c3445127d24",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1520,
+        220
+      ]
+    },
+    {
+      "parameters": {
+        "name": "room_requests",
+        "description": "Strictly use the Room Service Tool to create, modify, or cancel any requests\n include any\n- request any housekeeping item\n- request any housekeeping service\n- request will help, assistance, luggage, kids and pets\n- request any dining utensils item\n- request any pool, bar, glasses, services from reception\n- in room dining requests, food order to the room ",
+        "workflowId": {
+          "__rl": true,
+          "value": "GHgsW2ab3i1ESvQ6",
+          "mode": "list",
+          "cachedResultName": "Todoist actions"
+        },
+        "fields": {
+          "values": [
+            {}
+          ]
+        },
+        "specifyInputSchema": true,
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"taskid\": {\n      \"type\": \"number\",\n      \"description\": \"The unique identifier for the task\"\n    },\n    \"request\": {\n      \"type\": \"string\",\n      \"description\": \"Description of the request made by the guest\"\n    },\n    \"roomNumber\": {\n      \"type\": \"number\",\n      \"description\": \"The room number where the request is made\"\n    },\n    \"due\": {\n      \"type\": \"string\",\n      \"description\": \"The due time for the request, in ISO 8601 format\",\n      \"format\": \"date-time\"\n    }\n  }\n}\n"
+      },
+      "id": "38759356-9af9-4ca0-871a-61b70e83c08a",
+      "name": "Room Service Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "d23f0b63-a79e-4164-acf3-8d9140f0d187",
+      "name": "Insert into Supabase Vectorstore",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        1400
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "skl19V5xVX7pMADQ",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {
+          "queryName": "match_documents"
+        }
+      },
+      "id": "b3d8448a-0d1b-4d31-9b31-312494a55593",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1,
+      "position": [
+        -1140,
+        780
+      ],
+      "credentials": {
+        "supabaseApi": {
+          "id": "skl19V5xVX7pMADQ",
+          "name": "Supabase account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a hotel concierge assisting guests with navigating hotel facilities, answering questions, and fulfilling various requests. You can help guests with:\n\nRestaurant bookings, tennis court bookings\nRoom service and other human-assisted requests strictly through the Room Service Tool\nCurrent Date: {{ $now }}\nTimezone: Sydney, Australia\n\nDatabase contains Room dining menu/ Wine menu/ Kid menu/ breakfast menu/ overnight menu. Check the time before return menu to the guest. There should be also a copy of the menus in guests room. \n\nGuidelines:\nRoom Service Requests (In-Room Dining, Housekeeping, and More):\n\nStrictly use the Room Service Tool to create, modify, or cancel any requests that require human assistance, such as in-room dining, housekeeping, extra utensils, towels, luggage service, and other guest needs.\nConfirm with the guest to ensure all requested items are included before creating the request.\nAfter a request is successfully created, provide the guest with a task ID so they can use it to track, update, or cancel the request. Remind guests that they must provide this task ID for any future modifications or cancellations.\nTennis Court Bookings:\n\nUse the Tennis Court Calendar to check availability and assist guests with tennis court bookings. Bookings default to one hour unless specified otherwise, and ensure no schedule conflicts exist before confirming.\nGeneral Communication:\n\nAlways provide accurate, up-to-date information. If any tools are temporarily unavailable, politely inform the guest and apologize for any inconvenience.\nYour goal is to offer attentive, reliable service, always adhering to the requirement of using the Room Service Tool for all human-assisted requests and ensuring guest satisfaction with a friendly, professional approach.\nif guest ask for room number it mean {{ $json.room_id }}\nHere is your guest data:\n{{ $json.guest_reference }}{{ $json.room_id }}"
+        }
+      },
+      "id": "a0d857f6-7c3d-4103-800c-46c6041ffe6a",
+      "name": "RAG AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -1280,
+        300
+      ],
+      "retryOnFail": true
+    },
+    {
+      "parameters": {},
+      "id": "2f710cd2-8790-4b21-b707-577b16dd9ab5",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "typeVersion": 1.1,
+      "position": [
+        -1160,
+        520
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "MiHhKVSFDxQKcxAL",
+          "name": "Postgres account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "dcaf0b10-2f27-4fc7-8d37-69642707622c",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2120,
+        300
+      ],
+      "webhookId": "e985d15f-b2f6-456d-be15-97e0b1544a40"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Extract Document Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Document Text": {
+      "main": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Insert into Supabase Vectorstore",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Doc Rows": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Doc Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Updated": {
+      "main": [
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Room Service Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Retrieve Documents",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "58a9e97e-ad64-4145-a19a-bfdd08d14781",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "baa37bfd6cf1f8eb312c3e2e43a6fbac93156eb89eef3a1fc306c8f20ef14852"
+  },
+  "id": "BjXKLS8iy1eHOHgK",
+  "tags": []
+}
